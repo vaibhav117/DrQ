@@ -131,3 +131,4 @@ dmypy.json
 # Custom
 Code/__pycache__
 Code/exp_local
+logs
