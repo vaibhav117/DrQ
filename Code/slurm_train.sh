@@ -14,4 +14,4 @@
 #SBATCH --export=ALL
 
 bash ./run-mpi4py-singularity.bash \
-	python3 
+	python train.py env=Breakout
