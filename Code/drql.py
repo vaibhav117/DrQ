@@ -355,7 +355,7 @@ class DRQLAgent(object):
 
         if prioritized_replay:
             # TODO prioritized replay buffer: update the priorities in the replay buffer using td_errors
-            pass
+            replay_buffer.update_priorities(idxs,abs(td_errors[:,0]))
             # End TODO
 
         if step % self.critic_target_update_frequency == 0:
