@@ -4,7 +4,7 @@ algo: Double-DQN
 # see section 4.1 in https://arxiv.org/pdf/1812.06110.pdf
 terminal_on_life_loss: true
 # train
-num_train_steps: 100001
+num_train_steps: 1000010
 num_train_iters: 1
 num_exploration_steps: 5000 # 50000
 start_training_steps: 1600

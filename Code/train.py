@@ -172,7 +172,7 @@ class Workspace(object):
 
 @hydra.main(config_path='config.yaml', strict=True)
 def main(cfg):
-    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}")
+    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}")
     from train import Workspace as W
     workspace = W(cfg)
     workspace.run()
