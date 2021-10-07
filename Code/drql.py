@@ -297,7 +297,9 @@ class DRQLAgent(object):
                 # Find the target Q value based on the critic
                 # and the critic target networks to find the right
                 # value of target_Q
-                target_Q = None
+                next_Q = self.critic_target(next_obs, use_aug=True)
+                next_Q = next_Q.max(dim=1)[0].unsqueeze(1)
+                target_Q = reward + (not_done * discount * next_Q)
                 # End TODO
             else:
                 next_Q = self.critic_target(next_obs, use_aug=True)
