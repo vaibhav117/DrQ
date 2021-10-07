@@ -5,6 +5,8 @@ import pickle as pkl
 import sys
 import time
 import wandb
+from datetime import datetime
+from pytz import timezone
 
 import numpy as np
 
@@ -172,7 +174,10 @@ class Workspace(object):
 
 @hydra.main(config_path='config.yaml', strict=True)
 def main(cfg):
-    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}")
+    now_asia = datetime.now(timezone("US/Eastern"))
+    format = "%m-%d-%H:%M"
+    ts = now_asia.strftime(format)
+    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}-{ts}")
     from train import Workspace as W
     workspace = W(cfg)
     workspace.run()
