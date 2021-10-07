@@ -180,7 +180,7 @@ def main(cfg):
     now_us = datetime.now(timezone("US/Eastern"))
     format = "%m-%d-%H:%M"
     ts = now_us.strftime(format)
-    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}-{ts}")
+    wandb.init(project=f"deep-rl-hw2-{cfg.env}", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}-{ts}")
     from train import Workspace as W
     workspace = W(cfg)
     workspace.run()

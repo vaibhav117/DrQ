@@ -290,6 +290,7 @@ class DRQLAgent(object):
 
     def update_critic(self, obs, action, reward, next_obs, not_done, weights,
                       logger, step):
+        
         with torch.no_grad():
             discount = self.discount**self.multistep_return
             if self.double_q:
@@ -298,9 +299,9 @@ class DRQLAgent(object):
                 # and the critic target networks to find the right
                 # value of target_Q
                 next_Q = self.critic(next_obs, use_aug=True)
-                next_action = next_Q.argmax(dim=1).unsqueeze(0)
+                next_action = next_Q.argmax(dim=1).unsqueeze(1)
                 next_Q_target = self.critic_target(next_obs, use_aug=True)
-                next_Q_target = next_Q_target.gather(1,next_action)
+                next_Q_target = torch.gather(next_Q_target,1,next_action)
                 target_Q = reward + (not_done * discount * next_Q_target)
                 # End TODO
             else:
@@ -352,10 +353,9 @@ class DRQLAgent(object):
 
         td_errors = self.update_critic(obs, action, reward, next_obs, not_done,
                                        weights, logger, step)
-
         if prioritized_replay:
             # TODO prioritized replay buffer: update the priorities in the replay buffer using td_errors
-            replay_buffer.update_priorities(idxs,abs(td_errors[:,0]))
+            replay_buffer.update_priorities(idxs,abs(td_errors))
             # End TODO
 
         if step % self.critic_target_update_frequency == 0:
