@@ -4,6 +4,7 @@ import os
 import pickle as pkl
 import sys
 import time
+import wandb
 
 import numpy as np
 
@@ -87,11 +88,13 @@ class Workspace(object):
             average_episode_reward += episode_reward
             self.video_recorder.save(f'{num_eval_episodes}.mp4')
             num_eval_episodes += 1
+            wandb.log({"eval_episode_reward":episode_reward})
 
         average_episode_reward /= num_eval_episodes
         self.logger.log('eval/episode_reward', average_episode_reward,
                         self.step)
         self.logger.dump(self.step, ty='eval')
+        wandb.log({"eval_best_average_episode_reward":average_episode_reward})
 
     def run(self):
         episode, episode_reward, episode_step, done = 0, 0, 1, True
@@ -113,12 +116,14 @@ class Workspace(object):
                         save=(self.step > self.cfg.start_training_steps),
                         ty='train')
 
+                wandb.log({"train_episode_reward":episode_reward, "episode_count": episode})
                 obs = self.env.reset()
                 self.train_video_recorder.init(obs, enabled=True)
                 done = False
                 episode_reward = 0
                 episode_step = 0
                 episode += 1
+                
 
             # evaluate agent periodically
             if self.step > 0 and self.step % self.cfg.eval_frequency == 0:
@@ -159,7 +164,7 @@ class Workspace(object):
 
             self.replay_buffer.add(obs, action, reward, next_obs,
                                    terminal_no_max)
-
+                                   
             obs = next_obs
             episode_step += 1
             self.step += 1
@@ -167,6 +172,7 @@ class Workspace(object):
 
 @hydra.main(config_path='config.yaml', strict=True)
 def main(cfg):
+    wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}")
     from train import Workspace as W
     workspace = W(cfg)
     workspace.run()
