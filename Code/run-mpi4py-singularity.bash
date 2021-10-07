@@ -13,7 +13,7 @@ if [[ "$(hostname -s)" =~ ^g[r,v] ]]; then nv="--nv"; fi
 source /scratch/work/public/singularity/greene-ib-slurm-bind.sh
 
 singularity exec $nv \
-	    --overlay /scratch/vm2134/projects/deep_rl/overlay-50G-10M_deeprl.ext3:rw \
+	    --overlay /scratch/vm2134/projects/deep_rl/overlay-50G-10M_deeprl_3.ext3:rw \
 	    --overlay /scratch/work/public/singularity/openmpi4.1.1-ubuntu18.04.sqf:ro \
 	    --overlay /scratch/work/public/singularity/mujoco200-dep-cuda11.1-cudnn8-ubunutu18.04.sqf:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
