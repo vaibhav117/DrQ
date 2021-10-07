@@ -174,9 +174,9 @@ class Workspace(object):
 
 @hydra.main(config_path='config.yaml', strict=True)
 def main(cfg):
-    now_asia = datetime.now(timezone("US/Eastern"))
+    now_us = datetime.now(timezone("US/Eastern"))
     format = "%m-%d-%H:%M"
-    ts = now_asia.strftime(format)
+    ts = now_us.strftime(format)
     wandb.init(project="deep-rl-hw2", name=f"{cfg.algo}-{cfg.env}-{cfg.num_train_steps}-{ts}")
     from train import Workspace as W
     workspace = W(cfg)
