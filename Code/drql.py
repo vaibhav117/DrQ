@@ -8,6 +8,7 @@ import math
 import utils
 import hydra
 import kornia
+import wandb
 
 from replay_buffer import PrioritizedReplayBuffer
 
@@ -199,8 +200,8 @@ class Critic(nn.Module):
 
         if dueling:
             # TODO dueling DQN, define the value and the advantage network
-            self.V = None
-            self.A = None
+            self.V = utils.mlp(self.encoder.feature_dim, hidden_dim,1, hidden_depth)
+            self.A = utils.mlp(self.encoder.feature_dim, hidden_dim,num_actions, hidden_depth)
             # END TODO
         else:
             self.Q = utils.mlp(self.encoder.feature_dim, hidden_dim,
@@ -217,9 +218,9 @@ class Critic(nn.Module):
 
         if self.dueling:
             # TODO dueling DQN, compute the q value from the value and advantage network
-            v = None
-            a = None
-            q = None
+            v = self.V(obs)
+            a = self.A(obs)
+            q = v + (a - a.mean())
             # END TODO
         else:
             q = self.Q(obs)
@@ -321,6 +322,7 @@ class DRQLAgent(object):
         critic_loss = critic_losses.mean()
 
         logger.log('train_critic/loss', critic_loss, step)
+        wandb.log({"train_critic_loss":critic_loss})
 
         # Optimize the critic
         self.critic_optimizer.zero_grad()
@@ -350,6 +352,7 @@ class DRQLAgent(object):
             weights = None
 
         logger.log('train/batch_reward', reward.mean(), step)
+        wandb.log({"avg_bath_reward":reward.mean()})
 
         td_errors = self.update_critic(obs, action, reward, next_obs, not_done,
                                        weights, logger, step)
