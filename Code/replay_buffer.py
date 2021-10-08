@@ -128,7 +128,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         assert idxs.shape[0] == prios.shape[0]
 
         for idx, prio in zip(idxs, prios):
-            assert prio > 0
+            assert prio >= 0
             assert 0 <= idx < len(self)
 
             self.sum_tree[idx] = prio**self.alpha
