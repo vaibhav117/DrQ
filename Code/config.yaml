@@ -15,7 +15,7 @@ prioritized_replay: true
 prioritized_replay_alpha: 0.6
 seed: 1
 # eval
-eval_frequency: 10000
+eval_frequency: 15000
 num_eval_steps: 3000
 # misc
 log_frequency_step: 10000
