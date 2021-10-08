@@ -8,9 +8,9 @@
 #SBATCH --mail-type=END
 #SBATCH --gres=gpu
 #SBATCH --array=1
-#SBATCH --job-name=dqn_breakout
-#SBATCH --output=./logs/dqn_breakout/%j_%x.out
-#SBATCH --error=./logs/dqn_breakout/%j_%x.err
+#SBATCH --job-name=rainbow_breakout
+#SBATCH --output=./logs/rainbow_breakout/%j_%x.out
+#SBATCH --error=./logs/rainbow_breakout/%j_%x.err
 #SBATCH --export=ALL
 
 bash ./run-mpi4py-singularity.bash \
