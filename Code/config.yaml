@@ -1,6 +1,6 @@
 # env
 env: Breakout
-algo: DQN
+algo: D-DQN
 # see section 4.1 in https://arxiv.org/pdf/1812.06110.pdf
 terminal_on_life_loss: true
 # train
@@ -60,7 +60,7 @@ agent:
     multistep_return: 10
     eval_eps: 0.05
     # TODO double Q learning: fix this
-    double_q: false
+    double_q: true
     prioritized_replay_beta0: 0.4
     prioritized_replay_beta_steps: ${num_train_steps}
 
