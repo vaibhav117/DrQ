@@ -4,7 +4,7 @@ algo: Rainbow
 # see section 4.1 in https://arxiv.org/pdf/1812.06110.pdf
 terminal_on_life_loss: true
 # train
-num_train_steps: 300001
+num_train_steps: 200001
 num_train_iters: 1
 num_exploration_steps: 5000 # 50000
 start_training_steps: 1600
@@ -15,7 +15,7 @@ prioritized_replay: true
 prioritized_replay_alpha: 0.6
 seed: 1
 # eval
-eval_frequency: 15000
+eval_frequency: 10000
 num_eval_steps: 3000
 # misc
 log_frequency_step: 10000
