@@ -191,7 +191,8 @@ class Critic(nn.Module):
                           Intensity(scale=intensity_scale),
                           kornia.augmentation.RandomRotation(degrees=5.0),
                           kornia.augmentation.RandomHorizontalFlip(p=0.5),
-                          kornia.augmentation.RandomVerticalFlip(p=0.5),), # TODO DrQ fix this line.
+                          kornia.augmentation.RandomVerticalFlip(p=0.5),
+                          kornia.augmentation.RandomHorizontalFlip(p=0.5),), # TODO DrQ fix this line.
         }
 
         assert aug_type in AUGMENTATIONS.keys()
