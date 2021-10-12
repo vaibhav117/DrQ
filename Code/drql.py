@@ -186,7 +186,12 @@ class Critic(nn.Module):
             'none':
             nn.Identity(),
             'all':
-            nn.Identity(), # TODO DrQ fix this line.
+            nn.Sequential(nn.ReplicationPad2d(image_pad),
+                          kornia.augmentation.RandomCrop((84, 84)),
+                          Intensity(scale=intensity_scale),
+                          kornia.augmentation.RandomRotation(degrees=5.0),
+                          kornia.augmentation.RandomHorizontalFlip(p=0.5),
+                          kornia.augmentation.RandomVerticalFlip(p=0.5),), # TODO DrQ fix this line.
         }
 
         assert aug_type in AUGMENTATIONS.keys()
