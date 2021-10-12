@@ -1,6 +1,6 @@
 # env
 env: Breakout
-algo: Rainbow_DQN
+algo: DRQ_all
 # see section 4.1 in https://arxiv.org/pdf/1812.06110.pdf
 terminal_on_life_loss: true
 # train
