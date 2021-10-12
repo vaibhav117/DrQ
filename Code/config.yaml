@@ -1,6 +1,7 @@
 # env
 env: Breakout
-algo: DRQ_all
+aug_type: all
+algo: DRQ_${aug_type}
 # see section 4.1 in https://arxiv.org/pdf/1812.06110.pdf
 terminal_on_life_loss: true
 # train
@@ -26,7 +27,6 @@ device: cuda
 # observation
 image_pad: 4
 intensity_scale: 0.05
-aug_type: all
 # global params
 lr: 0.0001
 beta_1: 0.9
