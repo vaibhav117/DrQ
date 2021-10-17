@@ -8,6 +8,7 @@ import math
 import utils
 import hydra
 import kornia
+import wandb
 
 from replay_buffer import PrioritizedReplayBuffer
 
@@ -185,7 +186,13 @@ class Critic(nn.Module):
             'none':
             nn.Identity(),
             'all':
-            nn.Identity(), # TODO DrQ fix this line.
+            nn.Sequential(nn.ReplicationPad2d(image_pad),
+                          kornia.augmentation.RandomCrop((84, 84)),
+                          Intensity(scale=intensity_scale),
+                          kornia.augmentation.RandomRotation(degrees=5.0),
+                          kornia.augmentation.RandomHorizontalFlip(p=0.5),
+                          kornia.augmentation.RandomVerticalFlip(p=0.5),
+                          kornia.augmentation.RandomHorizontalFlip(p=0.5),), # TODO DrQ fix this line.
         }
 
         assert aug_type in AUGMENTATIONS.keys()
@@ -199,8 +206,8 @@ class Critic(nn.Module):
 
         if dueling:
             # TODO dueling DQN, define the value and the advantage network
-            self.V = None
-            self.A = None
+            self.V = utils.mlp(self.encoder.feature_dim, hidden_dim,1, hidden_depth)
+            self.A = utils.mlp(self.encoder.feature_dim, hidden_dim,num_actions, hidden_depth)
             # END TODO
         else:
             self.Q = utils.mlp(self.encoder.feature_dim, hidden_dim,
@@ -217,9 +224,9 @@ class Critic(nn.Module):
 
         if self.dueling:
             # TODO dueling DQN, compute the q value from the value and advantage network
-            v = None
-            a = None
-            q = None
+            v = self.V(obs)
+            a = self.A(obs)
+            q = v + (a - a.mean())
             # END TODO
         else:
             q = self.Q(obs)
@@ -290,6 +297,7 @@ class DRQLAgent(object):
 
     def update_critic(self, obs, action, reward, next_obs, not_done, weights,
                       logger, step):
+        
         with torch.no_grad():
             discount = self.discount**self.multistep_return
             if self.double_q:
@@ -298,9 +306,9 @@ class DRQLAgent(object):
                 # and the critic target networks to find the right
                 # value of target_Q
                 next_Q = self.critic(next_obs, use_aug=True)
-                next_action = next_Q.argmax(dim=1).unsqueeze(0)
+                next_action = next_Q.argmax(dim=1).unsqueeze(1)
                 next_Q_target = self.critic_target(next_obs, use_aug=True)
-                next_Q_target = next_Q_target.gather(1,next_action)
+                next_Q_target = torch.gather(next_Q_target,1,next_action)
                 target_Q = reward + (not_done * discount * next_Q_target)
                 # End TODO
             else:
@@ -320,6 +328,7 @@ class DRQLAgent(object):
         critic_loss = critic_losses.mean()
 
         logger.log('train_critic/loss', critic_loss, step)
+        wandb.log({"train_critic_loss":critic_loss})
 
         # Optimize the critic
         self.critic_optimizer.zero_grad()
@@ -349,13 +358,13 @@ class DRQLAgent(object):
             weights = None
 
         logger.log('train/batch_reward', reward.mean(), step)
+        wandb.log({"avg_bath_reward":reward.mean()})
 
         td_errors = self.update_critic(obs, action, reward, next_obs, not_done,
                                        weights, logger, step)
-
         if prioritized_replay:
             # TODO prioritized replay buffer: update the priorities in the replay buffer using td_errors
-            replay_buffer.update_priorities(idxs,abs(td_errors[:,0]))
+            replay_buffer.update_priorities(idxs,abs(td_errors))
             # End TODO
 
         if step % self.critic_target_update_frequency == 0:
